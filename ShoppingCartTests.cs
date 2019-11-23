@@ -90,7 +90,7 @@ namespace Ecommerce
             if (lineItem.Quantity <= 0)
                 throw new InvalidQuantity(lineItem.Quantity);
 
-            LineItems.Add(new LineItem(new Product("Apple", 0.35m), 3));
+            LineItems.Add(lineItem);
         }
     }
 
