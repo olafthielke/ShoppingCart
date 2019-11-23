@@ -58,9 +58,12 @@ namespace Ecommerce
         public void Given_Valid_LineItem_When_Call_AddLineItem_Then_Add_LineItem_To_ShoppingCart()
         {
             var cart = new ShoppingCart();
-            cart.AddLineItem(new LineItem(new Product("Apple", 0.35m), 3));
-            cart.LineItems.Should().ContainEquivalentOf(new LineItem(new Product("Apple", 0.35m), 3));
+            cart.AddLineItem(new LineItem(Apple, 3));
+            cart.LineItems.Should().ContainEquivalentOf(new LineItem(Apple, 3));
         }
+
+
+        private static Product Apple => new Product("Apple", 0.35m);
    }
 
 
