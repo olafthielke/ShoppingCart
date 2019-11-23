@@ -30,6 +30,14 @@ namespace Ecommerce
             Action add = () => cart.AddLineItem(null);
             add.Should().Throw<MissingLineItem>();
         }
+
+        [Fact]
+        public void Given_Null_Product_When_Call_AddLineItem_Then_Throw_MissingProduct()
+        {
+            var cart = new ShoppingCart();
+            Action add = () => cart.AddLineItem(new LineItem(null));
+            add.Should().Throw<MissingProduct>();
+        }
    }
 
 
