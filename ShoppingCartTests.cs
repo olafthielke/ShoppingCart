@@ -24,13 +24,6 @@ namespace Ecommerce
 
         // Add
         [Fact]
-        public void Can_Call_AddLineItem()
-        {
-            var cart = new ShoppingCart();
-            cart.AddLineItem();
-        }
- 
-        [Fact]
         public void Given_Null_LineItem_When_Call_AddLineItem_Then_Throw_MissingLineItem()
         {
             var cart = new ShoppingCart();
@@ -45,13 +38,18 @@ namespace Ecommerce
         public decimal Total => 0;
         public List<LineItem> LineItems { get; private set; } = new List<LineItem>();
 
-        public void AddLineItem()
+        public void AddLineItem(object lineItem)
         {
-            
+            throw new MissingLineItem();
         }
     }
 
     public class LineItem
+    {
+
+    }
+
+    public class MissingLineItem : Exception
     {
 
     }
