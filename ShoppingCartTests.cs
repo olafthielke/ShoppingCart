@@ -54,25 +54,29 @@ namespace Ecommerce
             add.Should().Throw<InvalidQuantity>().WithMessage($"{quantity} is not a valid Quantity.");
         }
 
-        [Fact]
-        public void Given_Valid_LineItem_When_Call_AddLineItem_Then_Add_LineItem_To_ShoppingCart()
+        [Theory]
+        [InlineData("Apple", 0.35, 3)]
+        [InlineData("Banana", 0.59, 7)]
+        [InlineData("Cantaloupe", 4.50, 17)]
+        public void Given_Single_Valid_LineItem_When_Call_AddLineItem_Then_Add_LineItem_To_ShoppingCart(string productDesc, decimal unitPrice, int quantity)
         {
             var cart = new ShoppingCart();
-            cart.AddLineItem(new LineItem(Apple, 3));
-            cart.LineItems.Should().ContainEquivalentOf(new LineItem(Apple, 3));
-        }
-
-        [Fact]
-        public void Given_Another_Valid_LineItem_When_Call_AddLineItem_Then_Add_LineItem_To_ShoppingCart()
-        {
-            var cart = new ShoppingCart();
-            cart.AddLineItem(new LineItem(Banana, 7));
-            cart.LineItems.Should().ContainEquivalentOf(new LineItem(Banana, 7));
+            cart.AddLineItem(new LineItem(new Product(productDesc, unitPrice), quantity));
+            VerifyLineItem(cart.LineItems[0], productDesc, unitPrice, quantity);
         }
 
 
         private static Product Apple => new Product("Apple", 0.35m);
         private static Product Banana => new Product("Banana", 0.59m);
+
+
+        private void VerifyLineItem(LineItem lineItem, string productDesc, decimal unitPrice, int quantity)
+        {
+            var product = lineItem.Product;
+            product.Description.Should().Be(productDesc);
+            product.UnitPrice.Should().Be(unitPrice);
+            lineItem.Quantity.Should().Be(quantity);
+        }
    }
 
 
@@ -96,10 +100,10 @@ namespace Ecommerce
 
     public class LineItem
     {
-        public object Product { get; }
+        public Product Product { get; }
         public int Quantity { get; }
 
-        public LineItem(object product, int quantity)
+        public LineItem(Product product, int quantity)
         {
             Product = product;
             Quantity = quantity;
@@ -108,9 +112,14 @@ namespace Ecommerce
 
     public class Product
     {
+        public string Description { get; }
+        public decimal UnitPrice { get; }
+
+
         public Product(string description, decimal unitPrice)
         {
-
+            Description = description;
+            UnitPrice = unitPrice;
         }
     }
 
