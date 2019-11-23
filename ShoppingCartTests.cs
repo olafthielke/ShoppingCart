@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using FluentAssertions;
 using Xunit;
 
@@ -34,8 +35,12 @@ namespace Ecommerce
     public class ShoppingCart
     {
         public decimal Total => 0;
-
         public List<LineItem> LineItems { get; private set; } = new List<LineItem>();
+
+        public void AddLineItem()
+        {
+            
+        }
     }
 
     public class LineItem
