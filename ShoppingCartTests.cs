@@ -24,6 +24,8 @@ namespace Ecommerce
 
     public class ShoppingCart
     {
+        public decimal Total => 0;
+
         public List<LineItem> LineItems { get; private set; } = new List<LineItem>();
     }
 
