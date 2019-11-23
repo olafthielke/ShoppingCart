@@ -48,16 +48,26 @@ namespace Ecommerce
 
         public void AddLineItem(object lineItem)
         {
-            throw new MissingLineItem();
+            if (lineItem == null)
+                throw new MissingLineItem();
+            throw new MissingProduct();
         }
     }
 
     public class LineItem
     {
+        public LineItem(object product)
+        {
 
+        }
     }
 
     public class MissingLineItem : Exception
+    {
+
+    }
+
+    public class MissingProduct : Exception
     {
 
     }
