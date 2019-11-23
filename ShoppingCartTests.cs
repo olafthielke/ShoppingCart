@@ -55,14 +55,16 @@ namespace Ecommerce
         }
 
         [Theory]
-        [InlineData("Apple", 0.35, 3)]
-        [InlineData("Banana", 0.59, 7)]
-        [InlineData("Cantaloupe", 4.50, 17)]
-        public void Given_Single_Valid_LineItem_When_Call_AddLineItem_Then_Add_LineItem_To_ShoppingCart(string productDesc, decimal unitPrice, int quantity)
+        [InlineData("Apple", 0.35, 3, 1.05)]
+        [InlineData("Banana", 0.59, 7, 4.13)]
+        [InlineData("Cantaloupe", 4.50, 17, 76.5)]
+        public void Given_Single_Valid_LineItem_When_Call_AddLineItem_Then_Add_LineItem_To_ShoppingCart(string productDesc, 
+            decimal unitPrice, int quantity, decimal total)
         {
             var cart = new ShoppingCart();
             cart.AddLineItem(new LineItem(new Product(productDesc, unitPrice), quantity));
             VerifyLineItem(cart.LineItems[0], productDesc, unitPrice, quantity);
+            cart.Total.Should().Be(total);
         }
 
 
