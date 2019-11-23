@@ -1,7 +1,13 @@
-﻿namespace Ecommerce
+﻿using Xunit;
+
+namespace Ecommerce
 {
     public class ShoppingCartTests
     {
-
+        [Fact]
+        public void Can_Create()
+        {
+            var cart = new ShoppingCart();
+        }
     }
 }
