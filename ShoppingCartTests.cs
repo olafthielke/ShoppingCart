@@ -69,10 +69,6 @@ namespace Ecommerce
         }
 
 
-        private static Product Apple => new Product("Apple", 0.35m);
-        private static Product Banana => new Product("Banana", 0.59m);
-
-
         private void VerifyLineItem(LineItem lineItem, string productDesc, decimal unitPrice, int quantity)
         {
             var product = lineItem.Product;
@@ -90,22 +86,23 @@ namespace Ecommerce
 
         public void AddLineItem(LineItem lineItem)
         {
-            if (lineItem == null)
-                throw new MissingLineItem();
-            if (lineItem.Product == null)
-                throw new MissingProduct();
-            if (lineItem.Quantity <= 0)
-                throw new InvalidQuantity(lineItem.Quantity);
-
+            Validate(lineItem);
             LineItems.Add(lineItem);
         }
 
+
+        private void Validate(LineItem lineItem)
+        {
+            if (lineItem == null)
+                throw new MissingLineItem();
+            lineItem.Validate();
+        }
 
         private decimal CalcTotal()
         {
             if (!LineItems.Any())
                 return 0;
-            return LineItems[0].Quantity * LineItems[0].Product.UnitPrice;
+            return LineItems[0].Subtotal;
         }
     }
 
@@ -113,11 +110,20 @@ namespace Ecommerce
     {
         public Product Product { get; }
         public int Quantity { get; }
+        public decimal Subtotal => Product.UnitPrice * Quantity;
 
         public LineItem(Product product, int quantity)
         {
             Product = product;
             Quantity = quantity;
+        }
+
+        public void Validate()
+        {
+            if (Product == null)
+                throw new MissingProduct();
+            if (Quantity <= 0)
+                throw new InvalidQuantity(Quantity);
         }
     }
 
