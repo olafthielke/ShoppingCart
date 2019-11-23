@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using FluentAssertions;
 using Xunit;
 
@@ -84,7 +85,7 @@ namespace Ecommerce
 
     public class ShoppingCart
     {
-        public decimal Total => 0;
+        public decimal Total => CalcTotal();
         public List<LineItem> LineItems { get; private set; } = new List<LineItem>();
 
         public void AddLineItem(LineItem lineItem)
@@ -97,6 +98,14 @@ namespace Ecommerce
                 throw new InvalidQuantity(lineItem.Quantity);
 
             LineItems.Add(lineItem);
+        }
+
+
+        private decimal CalcTotal()
+        {
+            if (!LineItems.Any())
+                return 0;
+            return LineItems[0].Quantity * LineItems[0].Product.UnitPrice;
         }
     }
 
