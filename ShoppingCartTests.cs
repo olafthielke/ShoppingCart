@@ -51,7 +51,7 @@ namespace Ecommerce
         {
             var cart = new ShoppingCart();
             Action add = () => cart.AddLineItem(new LineItem(new Product(), quantity));
-            add.Should().Throw<InvalidQuantity>();
+            add.Should().Throw<InvalidQuantity>().WithMessage($"{quantity} is not a valid Quantity.");
         }
    }
 
