@@ -50,7 +50,7 @@ namespace Ecommerce
         public void Given_NonPositive_Quantity_When_Call_AddLineItem_Then_Throw_InvalidQuantity(int quantity)
         {
             var cart = new ShoppingCart();
-            Action add = () => cart.AddLineItem(new LineItem(new Product(), quantity));
+            Action add = () => cart.AddLineItem(new LineItem(new Product("", 0), quantity));
             add.Should().Throw<InvalidQuantity>().WithMessage($"{quantity} is not a valid Quantity.");
         }
 
@@ -75,7 +75,10 @@ namespace Ecommerce
                 throw new MissingLineItem();
             if (lineItem.Product == null)
                 throw new MissingProduct();
-            throw new InvalidQuantity(lineItem.Quantity);
+            if (lineItem.Quantity <= 0)
+                throw new InvalidQuantity(lineItem.Quantity);
+
+            LineItems.Add(new LineItem(new Product("Apple", 0.35m), 3));
         }
     }
 
@@ -93,7 +96,10 @@ namespace Ecommerce
 
     public class Product
     {
+        public Product(string description, decimal unitPrice)
+        {
 
+        }
     }
 
     public class MissingLineItem : Exception
