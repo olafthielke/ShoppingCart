@@ -6,6 +6,7 @@ namespace Ecommerce
 {
     public class ShoppingCartTests
     {
+        // Construction
         [Fact]
         public void When_Construct_Then_Initialise_LineItems_To_Empty_Collection()
         {
@@ -18,6 +19,14 @@ namespace Ecommerce
         {
             var cart = new ShoppingCart();
             cart.Total.Should().Be(0);
+        }
+
+        // Add
+        [Fact]
+        public void Can_Call_AddLineItem()
+        {
+            var cart = new ShoppingCart();
+            cart.AddLineItem();
         }
     }
 
