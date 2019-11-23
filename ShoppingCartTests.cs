@@ -39,19 +39,18 @@ namespace Ecommerce
             add.Should().Throw<MissingProduct>();
         }
 
-        [Fact]
-        public void Given_Zero_Quantity_When_Call_AddLineItem_Then_Throw_InvalidQuantity()
+        [Theory]
+        [InlineData(0)]
+        [InlineData(-1)]
+        [InlineData(-2)]
+        [InlineData(-3)]
+        [InlineData(-5)]
+        [InlineData(-10)]
+        [InlineData(-100)]
+        public void Given_NonPositive_Quantity_When_Call_AddLineItem_Then_Throw_InvalidQuantity(int quantity)
         {
             var cart = new ShoppingCart();
-            Action add = () => cart.AddLineItem(new LineItem(new Product(), 0));
-            add.Should().Throw<InvalidQuantity>();
-        }
-
-        [Fact]
-        public void Given_Minus_One_Quantity_When_Call_AddLineItem_Then_Throw_InvalidQuantity()
-        {
-            var cart = new ShoppingCart();
-            Action add = () => cart.AddLineItem(new LineItem(new Product(), -1));
+            Action add = () => cart.AddLineItem(new LineItem(new Product(), quantity));
             add.Should().Throw<InvalidQuantity>();
         }
    }
