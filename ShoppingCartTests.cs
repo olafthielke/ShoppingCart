@@ -35,7 +35,7 @@ namespace Ecommerce
         public void Given_Null_Product_When_Call_AddLineItem_Then_Throw_MissingProduct()
         {
             var cart = new ShoppingCart();
-            Action add = () => cart.AddLineItem(new LineItem(null));
+            Action add = () => cart.AddLineItem(new LineItem(null, 3));
             add.Should().Throw<MissingProduct>();
         }
 
@@ -43,7 +43,7 @@ namespace Ecommerce
         public void Given_Zero_Quantity_When_Call_AddLineItem_Then_Throw_InvalidQuantity()
         {
             var cart = new ShoppingCart();
-            Action add = () => cart.AddLineItem(new LineItem(null, 0));
+            Action add = () => cart.AddLineItem(new LineItem(new Product(), 0));
             add.Should().Throw<InvalidQuantity>();
         }
    }
@@ -54,20 +54,29 @@ namespace Ecommerce
         public decimal Total => 0;
         public List<LineItem> LineItems { get; private set; } = new List<LineItem>();
 
-        public void AddLineItem(object lineItem)
+        public void AddLineItem(LineItem lineItem)
         {
             if (lineItem == null)
                 throw new MissingLineItem();
-            throw new MissingProduct();
+            if (lineItem.Product == null)
+                throw new MissingProduct();
+            throw new InvalidQuantity();
         }
     }
 
     public class LineItem
     {
-        public LineItem(object product)
-        {
+        public object Product { get; }
 
+        public LineItem(object product, int quantity)
+        {
+            Product = product;
         }
+    }
+
+    public class Product
+    {
+
     }
 
     public class MissingLineItem : Exception
@@ -76,6 +85,11 @@ namespace Ecommerce
     }
 
     public class MissingProduct : Exception
+    {
+
+    }
+
+    public class InvalidQuantity : Exception
     {
 
     }
