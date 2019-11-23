@@ -53,6 +53,14 @@ namespace Ecommerce
             Action add = () => cart.AddLineItem(new LineItem(new Product(), quantity));
             add.Should().Throw<InvalidQuantity>().WithMessage($"{quantity} is not a valid Quantity.");
         }
+
+        [Fact]
+        public void Given_Valid_LineItem_When_Call_AddLineItem_Then_Add_LineItem_To_ShoppingCart()
+        {
+            var cart = new ShoppingCart();
+            cart.AddLineItem(new LineItem(new Product("Apple", 0.35m), 3));
+            cart.LineItems.Should().ContainEquivalentOf(new LineItem(new Product("Apple", 0.35m), 3));
+        }
    }
 
 
