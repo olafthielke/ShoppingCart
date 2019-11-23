@@ -67,17 +67,19 @@ namespace Ecommerce
                 throw new MissingLineItem();
             if (lineItem.Product == null)
                 throw new MissingProduct();
-            throw new InvalidQuantity();
+            throw new InvalidQuantity(lineItem.Quantity);
         }
     }
 
     public class LineItem
     {
         public object Product { get; }
+        public int Quantity { get; }
 
         public LineItem(object product, int quantity)
         {
             Product = product;
+            Quantity = quantity;
         }
     }
 
@@ -98,6 +100,8 @@ namespace Ecommerce
 
     public class InvalidQuantity : Exception
     {
-
+        public InvalidQuantity(int quantity) 
+            : base($"{quantity} is not a valid Quantity.")
+        { }
     }
 }
