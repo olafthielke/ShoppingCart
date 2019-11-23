@@ -10,4 +10,9 @@ namespace Ecommerce
             var cart = new ShoppingCart();
         }
     }
+
+    public class ShoppingCart
+    {
+
+    }
 }
