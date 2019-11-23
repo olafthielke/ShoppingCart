@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System.Collections.Generic;
+using FluentAssertions;
 using Xunit;
 
 namespace Ecommerce
@@ -19,7 +20,13 @@ namespace Ecommerce
         }
     }
 
+
     public class ShoppingCart
+    {
+        public List<LineItem> LineItems { get; private set; } = new List<LineItem>();
+    }
+
+    public class LineItem
     {
 
     }
