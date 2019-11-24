@@ -74,7 +74,7 @@ namespace Ecommerce
             var cart = new ShoppingCart();
             FillCart(cart, TwentyNine_Apples, Nineteen_Bananas, Thirteen_Cantaloupes);
             VerifyLineItems(cart.LineItems, TwentyNine_Apples, Nineteen_Bananas, Thirteen_Cantaloupes);
-            cart.Total.Should().Be(79.86m);
+            cart.Total.Should().Be(TwentyNine_Apples.Subtotal + Nineteen_Bananas.Subtotal + Thirteen_Cantaloupes.Subtotal);
         }
 
         // Constants
