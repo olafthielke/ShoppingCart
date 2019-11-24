@@ -77,7 +77,7 @@ namespace Ecommerce
             cart.Total.Should().Be(79.86m);
         }
 
-
+        // Constants
         private static Product Apple = new Product("Apple", 0.35m);
         private static Product Banana = new Product("Banana", 0.59m);
         private static Product Cantaloupe = new Product("Cantaloupe", 4.50m);
@@ -86,14 +86,14 @@ namespace Ecommerce
         private static LineItem Nineteen_Bananas = new LineItem(Banana, 19);
         private static LineItem Thirteen_Cantaloupes = new LineItem(Cantaloupe, 13);
 
-
+        // Setup
         private void FillCart(ShoppingCart cart, params LineItem[] lineItems)
         {
             foreach (var lineItem in lineItems)
                 cart.AddLineItem(lineItem);
         }
 
-
+        // Assertion
         private void VerifyLineItems(List<LineItem> expectedItems, params LineItem[] actualItems)
         {
             expectedItems.Count.Should().Be(actualItems.Count());
@@ -140,7 +140,7 @@ namespace Ecommerce
         {
             if (!LineItems.Any())
                 return 0;
-            return LineItems[0].Subtotal;
+            return LineItems.Sum(x => x.Subtotal);
         }
     }
 
