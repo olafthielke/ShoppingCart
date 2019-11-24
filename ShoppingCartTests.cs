@@ -25,18 +25,18 @@ namespace Ecommerce
 
         // Add
         [Fact]
-        public void Given_Null_LineItem_When_Call_AddLineItem_Then_Throw_MissingLineItem()
+        public void Given_Null_LineItem_When_Call_Add_LineItem_Then_Throw_MissingLineItem()
         {
             var cart = new ShoppingCart();
-            Action add = () => cart.AddLineItem(null);
+            Action add = () => cart.Add(null);
             add.Should().Throw<MissingLineItem>();
         }
 
         [Fact]
-        public void Given_Null_Product_When_Call_AddLineItem_Then_Throw_MissingProduct()
+        public void Given_Null_Product_When_Call_Add_LineItem_Then_Throw_MissingProduct()
         {
             var cart = new ShoppingCart();
-            Action add = () => cart.AddLineItem(new LineItem(null, 3));
+            Action add = () => cart.Add(new LineItem(null, 3));
             add.Should().Throw<MissingProduct>();
         }
 
@@ -48,10 +48,10 @@ namespace Ecommerce
         [InlineData(-5)]
         [InlineData(-10)]
         [InlineData(-100)]
-        public void Given_NonPositive_Quantity_When_Call_AddLineItem_Then_Throw_InvalidQuantity(int quantity)
+        public void Given_NonPositive_Quantity_When_Call_Add_LineItem_Then_Throw_InvalidQuantity(int quantity)
         {
             var cart = new ShoppingCart();
-            Action add = () => cart.AddLineItem(new LineItem(new Product("", 0), quantity));
+            Action add = () => cart.Add(new LineItem(new Product("", 0), quantity));
             add.Should().Throw<InvalidQuantity>().WithMessage($"{quantity} is not a valid Quantity.");
         }
 
@@ -59,17 +59,17 @@ namespace Ecommerce
         [InlineData("Apple", 0.35, 3, 1.05)]
         [InlineData("Banana", 0.59, 7, 4.13)]
         [InlineData("Cantaloupe", 4.50, 17, 76.5)]
-        public void Given_Single_Valid_LineItem_When_Call_AddLineItem_Then_Add_LineItem_To_ShoppingCart(string productDesc, 
+        public void Given_Single_Valid_LineItem_When_Call_Add_LineItem_Then_Add_LineItem_To_ShoppingCart(string productDesc, 
             decimal unitPrice, int quantity, decimal total)
         {
             var cart = new ShoppingCart();
-            cart.AddLineItem(new LineItem(new Product(productDesc, unitPrice), quantity));
+            cart.Add(new LineItem(new Product(productDesc, unitPrice), quantity));
             VerifyLineItem(cart.LineItems[0], productDesc, unitPrice, quantity);
             cart.Total.Should().Be(total);
         }
 
         [Fact]
-        public void Given_Multiple_LineItems_When_Call_AddLineItem_Then_Add_LineItems_To_ShoppingCart()
+        public void Given_Multiple_LineItems_When_Call_Add_LineItem_Then_Add_LineItems_To_ShoppingCart()
         {
             var cart = new ShoppingCart();
             FillCart(cart, TwentyNine_Apples, Nineteen_Bananas, Thirteen_Cantaloupes);
@@ -90,7 +90,7 @@ namespace Ecommerce
         private void FillCart(ShoppingCart cart, params LineItem[] lineItems)
         {
             foreach (var lineItem in lineItems)
-                cart.AddLineItem(lineItem);
+                cart.Add(lineItem);
         }
 
         // Assertion
@@ -119,10 +119,11 @@ namespace Ecommerce
 
     public class ShoppingCart
     {
-        public decimal Total => CalcTotal();
-        public List<LineItem> LineItems { get; private set; } = new List<LineItem>();
+        public decimal Total => LineItems.Sum(x => x.Subtotal);
+        public List<LineItem> LineItems { get; } = new List<LineItem>();
 
-        public void AddLineItem(LineItem lineItem)
+
+        public void Add(LineItem lineItem)
         {
             Validate(lineItem);
             LineItems.Add(lineItem);
@@ -134,13 +135,6 @@ namespace Ecommerce
             if (lineItem == null)
                 throw new MissingLineItem();
             lineItem.Validate();
-        }
-
-        private decimal CalcTotal()
-        {
-            if (!LineItems.Any())
-                return 0;
-            return LineItems.Sum(x => x.Subtotal);
         }
     }
 
