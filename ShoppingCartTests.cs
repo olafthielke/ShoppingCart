@@ -68,6 +68,43 @@ namespace Ecommerce
             cart.Total.Should().Be(total);
         }
 
+        [Fact]
+        public void Given_Multiple_LineItems_When_Call_AddLineItem_Then_Add_LineItems_To_ShoppingCart()
+        {
+            var cart = new ShoppingCart();
+            FillCart(cart, TwentyNine_Apples, Nineteen_Bananas, Thirteen_Cantaloupes);
+            VerifyLineItems(cart.LineItems, TwentyNine_Apples, Nineteen_Bananas, Thirteen_Cantaloupes);
+            cart.Total.Should().Be(79.86m);
+        }
+
+
+        private static Product Apple = new Product("Apple", 0.35m);
+        private static Product Banana = new Product("Banana", 0.59m);
+        private static Product Cantaloupe = new Product("Cantaloupe", 4.50m);
+
+        private static LineItem TwentyNine_Apples = new LineItem(Apple, 29);
+        private static LineItem Nineteen_Bananas = new LineItem(Banana, 19);
+        private static LineItem Thirteen_Cantaloupes = new LineItem(Cantaloupe, 13);
+
+
+        private void FillCart(ShoppingCart cart, params LineItem[] lineItems)
+        {
+            foreach (var lineItem in lineItems)
+                cart.AddLineItem(lineItem);
+        }
+
+
+        private void VerifyLineItems(List<LineItem> expectedItems, params LineItem[] actualItems)
+        {
+            expectedItems.Count.Should().Be(actualItems.Count());
+            for (var i = 0; i < expectedItems.Count; i++)
+                VerifyLineItem(expectedItems[i], actualItems[i]);
+        }
+
+        private void VerifyLineItem(LineItem expectedItem, LineItem actualItem)
+        {
+            expectedItem.Should().BeEquivalentTo(actualItem);
+        }
 
         private void VerifyLineItem(LineItem lineItem, string productDesc, decimal unitPrice, int quantity)
         {
@@ -75,6 +112,7 @@ namespace Ecommerce
             product.Description.Should().Be(productDesc);
             product.UnitPrice.Should().Be(unitPrice);
             lineItem.Quantity.Should().Be(quantity);
+            lineItem.Subtotal.Should().Be(quantity * unitPrice);
         }
    }
 
