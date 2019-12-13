@@ -81,11 +81,12 @@ namespace Ecommerce
         }
 
         [Fact]
-        public void Given_Product_Already_Exists_In_LineItem_When_Call_Add_LineItem_Then_Throw_DuplicateProductLineItem()
+        public void Given_Product_Already_Exists_In_LineItem_When_Call_Add_LineItem_Then_Merge_LineItem_Quantities()
         {
-            var cart = new ShoppingCart(new LineItem(Apple, 3));   
-            Action add = () => cart.Add(new LineItem(Apple, 5));
-            add.Should().Throw<DuplicateProductLineItem>();
+            var cart = new ShoppingCart(new LineItem(Apple, 3));
+            cart.Add(new LineItem(Apple, 5));
+            cart.LineItems.Count.Should().Be(1);
+            VerifyLineItem(new LineItem(Apple, 8), cart.LineItems[0]);
         }
 
 
