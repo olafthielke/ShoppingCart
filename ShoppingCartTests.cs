@@ -83,8 +83,7 @@ namespace Ecommerce
         [Fact]
         public void Given_Product_Already_Exists_In_LineItem_When_Call_Add_LineItem_Then_Throw_DuplicateProductLineItem()
         {
-            var cart = new ShoppingCart();
-            cart.Add(new LineItem(Apple, 3));
+            var cart = new ShoppingCart(new LineItem(Apple, 3));   
             Action add = () => cart.Add(new LineItem(Apple, 5));
             add.Should().Throw<DuplicateProductLineItem>();
         }
@@ -135,6 +134,15 @@ namespace Ecommerce
     {
         public decimal Total => LineItems.Sum(x => x.Subtotal);
         public List<LineItem> LineItems { get; } = new List<LineItem>();
+
+
+        public ShoppingCart() 
+        { }
+
+        public ShoppingCart(LineItem lineItem) 
+        { 
+            Add(lineItem);
+        }
 
 
         public void Add(LineItem newLineItem)
