@@ -51,20 +51,23 @@ namespace Ecommerce
         public void Given_NonPositive_Quantity_When_Call_Add_LineItem_Then_Throw_InvalidQuantity(int quantity)
         {
             var cart = new ShoppingCart();
-            Action add = () => cart.Add(new LineItem(new Product("", 0), quantity));
+            Action add = () => cart.Add(new LineItem(new Product(1, "", 0), quantity));
             add.Should().Throw<InvalidQuantity>().WithMessage($"{quantity} is not a valid Quantity.");
         }
 
         [Theory]
-        [InlineData("Apple", 0.35, 3, 1.05)]
-        [InlineData("Banana", 0.59, 7, 4.13)]
-        [InlineData("Cantaloupe", 4.50, 17, 76.5)]
-        public void Given_Single_Valid_LineItem_When_Call_Add_LineItem_Then_Add_LineItem_To_ShoppingCart(string productDesc, 
-            decimal unitPrice, int quantity, decimal total)
+        [InlineData(123, "Apple", 0.35, 3, 1.05)]
+        [InlineData(456, "Banana", 0.59, 7, 4.13)]
+        [InlineData(789, "Cantaloupe", 4.50, 17, 76.5)]
+        public void Given_Single_Valid_LineItem_When_Call_Add_LineItem_Then_Add_LineItem_To_ShoppingCart(int productId, 
+            string productDesc, 
+            decimal unitPrice, 
+            int quantity, 
+            decimal total)
         {
             var cart = new ShoppingCart();
-            cart.Add(new LineItem(new Product(productDesc, unitPrice), quantity));
-            VerifyLineItem(cart.LineItems[0], productDesc, unitPrice, quantity);
+            cart.Add(new LineItem(new Product(productId, productDesc, unitPrice), quantity));
+            VerifyLineItem(cart.LineItems[0], productId, productDesc, unitPrice, quantity);
             cart.Total.Should().Be(total);
         }
 
@@ -82,15 +85,15 @@ namespace Ecommerce
         {
             var cart = new ShoppingCart();
             cart.Add(new LineItem(Apple, 3));
-            Action add = () => cart.Add(new LineItem(Apple, 2));
+            Action add = () => cart.Add(new LineItem(Apple, 5));
             add.Should().Throw<DuplicateProductLineItem>();
         }
 
 
         // Constants
-        private static Product Apple = new Product("Apple", 0.35m);
-        private static Product Banana = new Product("Banana", 0.59m);
-        private static Product Cantaloupe = new Product("Cantaloupe", 4.50m);
+        private static Product Apple = new Product(123, "Apple", 0.35m);
+        private static Product Banana = new Product(456, "Banana", 0.59m);
+        private static Product Cantaloupe = new Product(789, "Cantaloupe", 4.50m);
 
         private static LineItem TwentyNine_Apples = new LineItem(Apple, 29);
         private static LineItem Nineteen_Bananas = new LineItem(Banana, 19);
@@ -116,9 +119,10 @@ namespace Ecommerce
             expectedItem.Should().BeEquivalentTo(actualItem);
         }
 
-        private void VerifyLineItem(LineItem lineItem, string productDesc, decimal unitPrice, int quantity)
+        private void VerifyLineItem(LineItem lineItem, int productId, string productDesc, decimal unitPrice, int quantity)
         {
             var product = lineItem.Product;
+            product.Id.Should().Be(productId);
             product.Description.Should().Be(productDesc);
             product.UnitPrice.Should().Be(unitPrice);
             lineItem.Quantity.Should().Be(quantity);
@@ -133,18 +137,26 @@ namespace Ecommerce
         public List<LineItem> LineItems { get; } = new List<LineItem>();
 
 
-        public void Add(LineItem lineItem)
+        public void Add(LineItem newLineItem)
         {
-            Validate(lineItem);
-            LineItems.Add(lineItem);
+            Validate(newLineItem);
+            LineItems.Add(newLineItem);
         }
 
 
-        private void Validate(LineItem lineItem)
+        private void Validate(LineItem newLineItem)
         {
-            if (lineItem == null)
+            if (newLineItem == null)
                 throw new MissingLineItem();
-            lineItem.Validate();
+            newLineItem.Validate();
+            CheckForSameProductAlreadyInCart(newLineItem);
+        }
+
+        private void CheckForSameProductAlreadyInCart(LineItem newLineItem)
+        {
+            foreach (var lineItem in LineItems)
+                if (lineItem.Product.Id == newLineItem.Product.Id)
+                    throw new DuplicateProductLineItem();
         }
     }
 
@@ -171,12 +183,14 @@ namespace Ecommerce
 
     public class Product
     {
+        public int Id { get; }
         public string Description { get; }
         public decimal UnitPrice { get; }
 
 
-        public Product(string description, decimal unitPrice)
+        public Product(int id, string description, decimal unitPrice)
         {
+            Id = id;
             Description = description;
             UnitPrice = unitPrice;
         }
@@ -197,5 +211,10 @@ namespace Ecommerce
         public InvalidQuantity(int quantity) 
             : base($"{quantity} is not a valid Quantity.")
         { }
+    }
+
+    public class DuplicateProductLineItem : Exception
+    {
+
     }
 }
