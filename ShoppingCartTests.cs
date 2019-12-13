@@ -127,12 +127,16 @@ namespace Ecommerce
 
         private void VerifyLineItem(LineItem lineItem, int productId, string productDesc, decimal unitPrice, int quantity)
         {
-            var product = lineItem.Product;
+            VerifyProduct(lineItem.Product, productId, productDesc, unitPrice);
+            lineItem.Quantity.Should().Be(quantity);
+            lineItem.Subtotal.Should().Be(quantity * unitPrice);
+        }
+
+        private void VerifyProduct(Product product, int productId, string productDesc, decimal unitPrice)
+        {
             product.Id.Should().Be(productId);
             product.Description.Should().Be(productDesc);
             product.UnitPrice.Should().Be(unitPrice);
-            lineItem.Quantity.Should().Be(quantity);
-            lineItem.Subtotal.Should().Be(quantity * unitPrice);
         }
    }
 
@@ -159,7 +163,7 @@ namespace Ecommerce
             foreach (var lineItem in LineItems)
                 if (lineItem.Product.Id == newLineItem.Product.Id)
                 {
-                    lineItem.Quantity += newLineItem.Quantity;
+                    lineItem.AddQuantity(newLineItem.Quantity);
                     return;
                 }
 
@@ -178,7 +182,7 @@ namespace Ecommerce
     public class LineItem
     {
         public Product Product { get; }
-        public int Quantity { get; set; }
+        public int Quantity { get; private set; }
         public decimal Subtotal => Product.UnitPrice * Quantity;
 
         public LineItem(Product product, int quantity)
@@ -193,6 +197,11 @@ namespace Ecommerce
                 throw new MissingProduct();
             if (Quantity <= 0)
                 throw new InvalidQuantity(Quantity);
+        }
+
+        public void AddQuantity(int quantity)
+        {
+            Quantity += quantity;
         }
     }
 
