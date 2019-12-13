@@ -80,13 +80,19 @@ namespace Ecommerce
             cart.Total.Should().Be(TwentyNine_Apples.Subtotal + Nineteen_Bananas.Subtotal + Thirteen_Cantaloupes.Subtotal);
         }
 
-        [Fact]
-        public void Given_Product_Already_Exists_In_LineItem_When_Call_Add_LineItem_Then_Merge_LineItem_Quantities()
+        [Theory]
+        [InlineData(1, 2, 3)]
+        [InlineData(3, 5, 8)]
+        [InlineData(5, 1, 6)]
+        [InlineData(6, 4, 10)]
+        public void Given_Product_Already_Exists_In_A_LineItem_When_Call_Add_LineItem_Then_Merge_LineItem_Quantities(int initQuantity, 
+            int moreQuantity, 
+            int totalQuantity)
         {
-            var cart = new ShoppingCart(new LineItem(Apple, 3));
-            cart.Add(new LineItem(Apple, 5));
+            var cart = new ShoppingCart(new LineItem(Apple, initQuantity));
+            cart.Add(new LineItem(Apple, moreQuantity));
             cart.LineItems.Count.Should().Be(1);
-            VerifyLineItem(new LineItem(Apple, 8), cart.LineItems[0]);
+            VerifyLineItem(new LineItem(Apple, totalQuantity), cart.LineItems[0]);
         }
 
 
@@ -149,6 +155,14 @@ namespace Ecommerce
         public void Add(LineItem newLineItem)
         {
             Validate(newLineItem);
+
+            foreach (var lineItem in LineItems)
+                if (lineItem.Product.Id == newLineItem.Product.Id)
+                {
+                    lineItem.Quantity += newLineItem.Quantity;
+                    return;
+                }
+
             LineItems.Add(newLineItem);
         }
 
@@ -158,21 +172,13 @@ namespace Ecommerce
             if (newLineItem == null)
                 throw new MissingLineItem();
             newLineItem.Validate();
-            CheckForSameProductAlreadyInCart(newLineItem);
-        }
-
-        private void CheckForSameProductAlreadyInCart(LineItem newLineItem)
-        {
-            foreach (var lineItem in LineItems)
-                if (lineItem.Product.Id == newLineItem.Product.Id)
-                    throw new DuplicateProductLineItem();
         }
     }
 
     public class LineItem
     {
         public Product Product { get; }
-        public int Quantity { get; }
+        public int Quantity { get; set; }
         public decimal Subtotal => Product.UnitPrice * Quantity;
 
         public LineItem(Product product, int quantity)
