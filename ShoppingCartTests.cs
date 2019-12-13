@@ -77,6 +77,16 @@ namespace Ecommerce
             cart.Total.Should().Be(TwentyNine_Apples.Subtotal + Nineteen_Bananas.Subtotal + Thirteen_Cantaloupes.Subtotal);
         }
 
+        [Fact]
+        public void Given_Product_Already_Exists_In_LineItem_When_Call_Add_LineItem_Then_Throw_DuplicateProductLineItem()
+        {
+            var cart = new ShoppingCart();
+            cart.Add(new LineItem(Apple, 3));
+            Action add = () => cart.Add(new LineItem(Apple, 2));
+            add.Should().Throw<DuplicateProductLineItem>();
+        }
+
+
         // Constants
         private static Product Apple = new Product("Apple", 0.35m);
         private static Product Banana = new Product("Banana", 0.59m);
