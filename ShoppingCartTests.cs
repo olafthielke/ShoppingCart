@@ -59,10 +59,10 @@ namespace Ecommerce
         [InlineData(123, "Apple", 0.35, 3, 1.05)]
         [InlineData(456, "Banana", 0.59, 7, 4.13)]
         [InlineData(789, "Cantaloupe", 4.50, 17, 76.5)]
-        public void Given_Single_Valid_LineItem_When_Call_Add_LineItem_Then_Add_LineItem_To_ShoppingCart(int productId, 
-            string productDesc, 
-            decimal unitPrice, 
-            int quantity, 
+        public void Given_Single_Valid_LineItem_When_Call_Add_LineItem_Then_Add_LineItem_To_ShoppingCart(int productId,
+            string productDesc,
+            decimal unitPrice,
+            int quantity,
             decimal total)
         {
             var cart = new ShoppingCart();
@@ -77,7 +77,8 @@ namespace Ecommerce
             var cart = new ShoppingCart();
             FillCart(cart, TwentyNine_Apples, Nineteen_Bananas, Thirteen_Cantaloupes);
             VerifyLineItems(cart.LineItems, TwentyNine_Apples, Nineteen_Bananas, Thirteen_Cantaloupes);
-            cart.Total.Should().Be(TwentyNine_Apples.Subtotal + Nineteen_Bananas.Subtotal + Thirteen_Cantaloupes.Subtotal);
+            cart.Total.Should()
+                .Be(TwentyNine_Apples.Subtotal + Nineteen_Bananas.Subtotal + Thirteen_Cantaloupes.Subtotal);
         }
 
         [Theory]
@@ -85,8 +86,9 @@ namespace Ecommerce
         [InlineData(3, 5, 8)]
         [InlineData(5, 1, 6)]
         [InlineData(6, 4, 10)]
-        public void Given_Product_Already_Exists_In_A_LineItem_When_Call_Add_LineItem_Then_Merge_LineItem_Quantities(int initQuantity, 
-            int moreQuantity, 
+        public void Given_Product_Already_Exists_In_A_LineItem_When_Call_Add_LineItem_Then_Merge_LineItem_Quantities(
+            int initQuantity,
+            int moreQuantity,
             int totalQuantity)
         {
             var cart = new ShoppingCart(new LineItem(Apple, initQuantity));
@@ -125,7 +127,8 @@ namespace Ecommerce
             expectedItem.Should().BeEquivalentTo(actualItem);
         }
 
-        private void VerifyLineItem(LineItem lineItem, int productId, string productDesc, decimal unitPrice, int quantity)
+        private void VerifyLineItem(LineItem lineItem, int productId, string productDesc, decimal unitPrice,
+            int quantity)
         {
             VerifyProduct(lineItem.Product, productId, productDesc, unitPrice);
             lineItem.Quantity.Should().Be(quantity);
@@ -138,107 +141,5 @@ namespace Ecommerce
             product.Description.Should().Be(productDesc);
             product.UnitPrice.Should().Be(unitPrice);
         }
-   }
-
-
-    public class ShoppingCart
-    {
-        public decimal Total => LineItems.Sum(x => x.Subtotal);
-        public List<LineItem> LineItems { get; } = new List<LineItem>();
-
-
-        public ShoppingCart() 
-        { }
-
-        public ShoppingCart(LineItem lineItem) 
-        { 
-            Add(lineItem);
-        }
-
-
-        public void Add(LineItem newLineItem)
-        {
-            Validate(newLineItem);
-
-            foreach (var lineItem in LineItems)
-                if (lineItem.Product.Id == newLineItem.Product.Id)
-                {
-                    lineItem.AddQuantity(newLineItem.Quantity);
-                    return;
-                }
-
-            LineItems.Add(newLineItem);
-        }
-
-
-        private void Validate(LineItem newLineItem)
-        {
-            if (newLineItem == null)
-                throw new MissingLineItem();
-            newLineItem.Validate();
-        }
-    }
-
-    public class LineItem
-    {
-        public Product Product { get; }
-        public int Quantity { get; private set; }
-        public decimal Subtotal => Product.UnitPrice * Quantity;
-
-        public LineItem(Product product, int quantity)
-        {
-            Product = product;
-            Quantity = quantity;
-        }
-
-        public void Validate()
-        {
-            if (Product == null)
-                throw new MissingProduct();
-            if (Quantity <= 0)
-                throw new InvalidQuantity(Quantity);
-        }
-
-        public void AddQuantity(int quantity)
-        {
-            Quantity += quantity;
-        }
-    }
-
-    public class Product
-    {
-        public int Id { get; }
-        public string Description { get; }
-        public decimal UnitPrice { get; }
-
-
-        public Product(int id, string description, decimal unitPrice)
-        {
-            Id = id;
-            Description = description;
-            UnitPrice = unitPrice;
-        }
-    }
-
-    public class MissingLineItem : Exception
-    {
-
-    }
-
-    public class MissingProduct : Exception
-    {
-
-    }
-
-    public class InvalidQuantity : Exception
-    {
-        public InvalidQuantity(int quantity) 
-            : base($"{quantity} is not a valid Quantity.")
-        { }
-    }
-
-    public class DuplicateProductLineItem : Exception
-    {
-
     }
 }
